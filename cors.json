@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["https://portaldoprofessor.madeinsertao.org"],
+    "method": ["GET", "POST", "PUT"],
+    "responseHeader": ["Content-Type", "x-goog-resumable"],
+    "maxAgeSeconds": 3600
+  }
+]
