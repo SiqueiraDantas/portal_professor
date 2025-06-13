@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Alunos por Turma</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      background-color: #ffffff;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    h2 {
+      color: #F26729;
+      font-weight: 700;
+    }
+
+    label {
+      color: #1B4B5F;
+      font-weight: 500;
+    }
+
+    .form-select, .form-control {
+      border: 2px solid #1B4B5F;
+    }
+
+    .form-select:focus, .form-control:focus {
+      border-color: #1B4B5F;
+      box-shadow: 0 0 0 0.15rem rgba(27, 75, 95, 0.25);
+    }
+
+    .table thead {
+      background-color: #F26729;
+      color: white;
+    }
+
+    .btn-voltar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 6px 12px;
+      text-decoration: none;
+      color: #333;
+      background-color: white;
+    }
+
+    .btn-voltar:hover {
+      background-color: #f8f9fa;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container my-5">
+
+    <!-- Cabeçalho -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">Alunos por Turma</h2>
+      <a id="btnVoltar" class="btn-voltar">
+        <span style="font-size: 1.2rem;">«</span>
+        <span>Voltar</span>
+      </a>
+    </div>
+
+    <!-- Filtro de Turma -->
+    <div class="mb-4">
+      <label for="filtroTurma" class="form-label">Selecione a Turma:</label>
+      <select id="filtroTurma" class="form-select"></select>
+    </div>
+
+    <!-- Barra de Pesquisa -->
+    <div class="mb-4">
+      <label for="pesquisaAluno" class="form-label">Pesquisar Aluno:</label>
+      <input type="text" id="pesquisaAluno" class="form-control" placeholder="Digite o nome do aluno...">
+    </div>
+
+    <!-- Tabela de Alunos -->
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Matrícula</th>
+            <th>Nome</th>
+            <th>CPF</th>
+            <th>Data de Nascimento</th>
+            <th>Escola</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaAlunos"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="js/firebase.js"></script>
+
+  <script>
+    const db = firebase.firestore();
+
+    firebase.auth().onAuthStateChanged(async user => {
+      if (!user) return window.location.href = "index.html";
+
+      try {
+        const token = await user.getIdTokenResult();
+        const destino = token.claims.role === 'diretor' ? 'diretor.html' : 'dashboard.html';
+        document.getElementById("btnVoltar").setAttribute("href", destino);
+      } catch (e) {
+        console.error("Erro ao obter claims:", e);
+        document.getElementById("btnVoltar").setAttribute("href", "dashboard.html");
+      }
+    });
+
+    const filtro = document.getElementById("filtroTurma");
+    const tabela = document.getElementById("tabelaAlunos");
+    const campoPesquisa = document.getElementById("pesquisaAluno");
+
+    async function carregarTurmas() {
+      const snap = await db.collection("turmas").orderBy("oficina").get();
+      filtro.innerHTML = '<option value="">Selecione uma turma</option>';
+      snap.forEach(doc => {
+        const t = doc.data();
+        filtro.innerHTML += `<option value="${t.oficina}">${t.oficina}</option>`;
+      });
+    }
+
+    async function carregarAlunos(turmaId) {
+      tabela.innerHTML = "";
+      if (!turmaId) return;
+
+      const alunosSnap = await db.collection("alunos").where("turma", "==", turmaId).get();
+
+      alunosSnap.forEach(doc => {
+        const a = doc.data();
+        tabela.innerHTML += `
+          <tr>
+            <td>${a.matricula || '-'}</td>
+            <td>${a.nome || '-'}</td>
+            <td>${a.cpf || '-'}</td>
+            <td>${a.nascimento || '-'}</td>
+            <td>${a.escola || '-'}</td>
+          </tr>
+        `;
+      });
+
+      if (alunosSnap.empty) {
+        tabela.innerHTML = `<tr><td colspan="5" class="text-center">Nenhum aluno encontrado.</td></tr>`;
+      }
+    }
+
+    filtro.addEventListener("change", () => {
+      const turmaSelecionada = filtro.value;
+      carregarAlunos(turmaSelecionada);
+    });
+
+    // Filtro por nome
+    campoPesquisa.addEventListener("input", function () {
+      const termo = this.value.toLowerCase();
+      const linhas = tabela.querySelectorAll("tr");
+      linhas.forEach(row => {
+        const nome = row.cells[1]?.textContent?.toLowerCase() || "";
+        row.style.display = nome.includes(termo) ? "" : "none";
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      await carregarTurmas();
+    });
+  </script>
+</body>
+</html>

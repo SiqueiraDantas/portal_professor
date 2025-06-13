@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Alunos por Turma - Diretor</title>
+
+  <!-- Fonts e Bootstrap -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      background-color: #ffffff;
+      font-family: 'Poppins', sans-serif;
+      padding: 2rem;
+    }
+
+    h2 {
+      color: #F26729;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-voltar {
+      background-color: white;
+      color: #1B4B5F;
+      border: 2px solid #1B4B5F;
+      font-weight: 500;
+      border-radius: 8px;
+      padding: 6px 14px;
+      transition: 0.2s ease-in-out;
+    }
+
+    .btn-voltar:hover {
+      background-color: #1B4B5F;
+      color: white;
+    }
+
+    .form-label {
+      font-weight: 500;
+      color: #1B4B5F;
+    }
+
+    .table thead {
+      background-color: #1B4B5F;
+      color: white;
+    }
+
+    select.form-select {
+      border-color: #1B4B5F;
+    }
+
+    select.form-select:focus {
+      border-color: #1B4B5F;
+      box-shadow: 0 0 0 0.2rem rgba(27, 75, 95, 0.25);
+    }
+
+    .text-center {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">Alunos por Turma</h2>
+      <a href="diretor.html" class="btn btn-voltar d-flex align-items-center" style="gap: 6px;">
+        <span style="font-size: 1.2rem;">«</span>
+        <span>Voltar</span>
+      </a>
+    </div>
+
+    <div class="mb-4">
+      <label for="filtroTurma" class="form-label">Selecione a Turma:</label>
+      <select id="filtroTurma" class="form-select"></select>
+    </div>
+
+    <div class="mb-3">
+      <input type="text" id="pesquisaAluno" class="form-control" placeholder="Buscar aluno por nome...">
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Matrícula</th>
+            <th>Nome</th>
+            <th>CPF</th>
+            <th>Data de Nascimento</th>
+            <th>Escola</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaAlunos"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="js/firebase.js"></script>
+
+  <script>
+    const db = firebase.firestore();
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "index.html";
+      }
+    });
+
+    const filtro = document.getElementById("filtroTurma");
+    const tabela = document.getElementById("tabelaAlunos");
+
+    async function carregarTurmas() {
+      const snap = await db.collection("turmas").orderBy("oficina").get();
+      filtro.innerHTML = '<option value="">Selecione uma turma</option>';
+      snap.forEach(doc => {
+        const t = doc.data();
+        filtro.innerHTML += `<option value="${t.oficina}">${t.oficina}</option>`;
+      });
+    }
+
+    async function carregarAlunos(turmaSelecionada) {
+      tabela.innerHTML = "";
+      if (!turmaSelecionada) return;
+
+      const alunosSnap = await db.collection("alunos").where("turma", "==", turmaSelecionada).get();
+
+      if (alunosSnap.empty) {
+        tabela.innerHTML = `<tr><td colspan="5" class="text-center">Nenhum aluno encontrado.</td></tr>`;
+        return;
+      }
+
+      alunosSnap.forEach(doc => {
+        const a = doc.data();
+        tabela.innerHTML += `
+          <tr>
+            <td>${a.matricula || '-'}</td>
+            <td>${a.nome || '-'}</td>
+            <td>${a.cpf || '-'}</td>
+            <td>${a.nascimento || '-'}</td>
+            <td>${a.escola || '-'}</td>
+          </tr>
+        `;
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      await carregarTurmas();
+    });
+
+    filtro.addEventListener("change", () => {
+      const turmaSelecionada = filtro.value;
+      carregarAlunos(turmaSelecionada);
+    });
+
+    // 🔎 Pesquisa por nome
+    document.getElementById("pesquisaAluno").addEventListener("input", function () {
+      const termo = this.value.toLowerCase();
+      const linhas = document.querySelectorAll("#tabelaAlunos tr");
+
+      linhas.forEach(linha => {
+        const nome = linha.children[1]?.textContent.toLowerCase() || "";
+        linha.style.display = nome.includes(termo) ? "" : "none";
+      });
+    });
+  </script>
+
+</body>
+</html>

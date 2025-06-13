@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Corrigir Turmas dos Alunos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+  <div class="container my-5 text-center">
+    <h2 class="mb-4">Correção de Turmas</h2>
+    <p class="mb-4">Clique no botão abaixo para corrigir registros de alunos que estão com <strong>turma = "noite"</strong> em vez do nome correto da oficina.</p>
+    <button id="btnCorrigir" class="btn btn-danger">Corrigir Turmas</button>
+    <div id="resultado" class="mt-4 fw-bold text-success"></div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="js/firebase.js"></script>
+
+  <script>
+    const btn = document.getElementById("btnCorrigir");
+    const resultado = document.getElementById("resultado");
+
+    btn.addEventListener("click", async () => {
+      const db = firebase.firestore();
+      const snap = await db.collection("alunos").get();
+
+      const batch = db.batch();
+      let atualizados = 0;
+
+      snap.forEach(doc => {
+        const data = doc.data();
+
+        if (data.turma?.toLowerCase() === "noite" && data.oficina) {
+          const ref = db.collection("alunos").doc(doc.id);
+          batch.update(ref, {
+            turma: data.oficina
+          });
+          atualizados++;
+        }
+      });
+
+      if (atualizados > 0) {
+        await batch.commit();
+        resultado.textContent = `✅ ${atualizados} aluno(s) atualizados com sucesso!`;
+        resultado.classList.remove("text-danger");
+        resultado.classList.add("text-success");
+      } else {
+        resultado.textContent = "ℹ️ Nenhum registro com turma = 'noite' foi encontrado.";
+        resultado.classList.remove("text-success");
+        resultado.classList.add("text-danger");
+      }
+    });
+  </script>
+</body>
+</html>

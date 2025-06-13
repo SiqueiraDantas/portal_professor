@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portal do Professor</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .header {
+      background-color: #f39017;
+      padding: 1rem 0;
+      text-align: center;
+      position: relative;
+    }
+
+    .header img {
+      max-height: 60px;
+    }
+
+    .title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #f39017;
+      text-align: center;
+      margin: 1.5rem 0;
+    }
+
+    .card-dashboard {
+      border-radius: 16px;
+      color: white;
+      font-weight: bold;
+      padding: 1.2rem;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .card-dashboard:hover {
+      transform: translateY(-4px);
+    }
+
+    .card-igual {
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .btn-madein {
+      background-color: #f39017;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      padding: 0.6rem 1.2rem;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn-madein:hover {
+      background-color: #e28100;
+    }
+
+    .row.gap-2 {
+      gap: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <div class="header">
+    <button id="btnSair" class="btn btn-light position-absolute top-0 end-0 m-2">Sair</button>
+    <img src="img/logo_branca.png" alt="Logo Made In Sertão" draggable="false" />
+  </div>
+
+  <!-- Título -->
+  <div class="container">
+    <h2 class="title">Portal do Professor</h2>
+
+    <!-- Cartões -->
+    <div class="row justify-content-center g-3 mb-4">
+      <div class="col-md-3 col-6">
+        <div class="card-dashboard card-igual" style="background-color: #8b4614;" onclick="window.location.href='alunos.html'">
+          <div class="fw-bold">Alunos Matriculados</div>
+          <div id="totalAlunos" class="fs-4 mt-2">0</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="card-dashboard card-igual" style="background-color: #3c78b4;" onclick="window.location.href='turmas.html'">
+          <div class="fw-bold">Turmas Ativas</div>
+          <div id="totalTurmas" class="fs-4 mt-2">0</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="card-dashboard card-igual" style="background-color: #1b4b5f;" onclick="window.location.href='ver_frequencia.html'">
+          <div class="fw-bold">Frequência do Mês</div>
+          <div class="fs-6 mt-2">Clique para visualizar</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="card-dashboard card-igual" style="background-color: #8b4614;" onclick="window.location.href='faltas_criticas.html'">
+          <div class="fw-bold">Faltas Críticas</div>
+          <div id="totalCriticas" class="fs-4 mt-2">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botões -->
+    <div class="row justify-content-center text-center g-3 mb-5">
+      <div class="col-md-2 col-6"><a href="matricula.html" class="btn btn-madein w-100">Matrículas</a></div>
+      <div class="col-md-2 col-6"><a href="turmas.html" class="btn btn-madein w-100">Turmas</a></div>
+      <div class="col-md-2 col-6"><a href="chamada.html" class="btn btn-madein w-100">Frequência</a></div>
+      <div class="col-md-2 col-6"><a href="plano_de_aula.html" class="btn btn-madein w-100">Plano Aula</a></div>
+      <div class="col-md-2 col-6"><a href="turmas_com_alunos.html" class="btn btn-madein w-100">Ver Alunos</a></div>
+      <div class="col-md-2 col-6"><a href="relatorio_mensal.html" class="btn btn-madein w-100">Relatório</a></div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="js/firebase.js"></script>
+
+  <!-- Verificação de Login -->
+  <script>
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) window.location.href = "index.html";
+    });
+
+    document.getElementById("btnSair").addEventListener("click", () => {
+      firebase.auth().signOut().then(() => {
+        window.location.href = "index.html";
+      });
+    });
+  </script>
+
+  <!-- Contadores -->
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const db = firebase.firestore();
+      const totalAlunosEl = document.getElementById("totalAlunos");
+      const totalTurmasEl = document.getElementById("totalTurmas");
+      const totalCriticasEl = document.getElementById("totalCriticas");
+
+      const alunosSnap = await db.collection("alunos").get();
+      totalAlunosEl.textContent = alunosSnap.size;
+
+      const turmasSnap = await db.collection("turmas").get();
+      totalTurmasEl.textContent = turmasSnap.size;
+
+      const hoje = new Date();
+      const anoMes = hoje.toISOString().slice(0, 7);
+      const chamadasSnap = await db.collection("chamadas")
+        .where("data", ">=", `${anoMes}-01`)
+        .where("data", "<=", `${anoMes}-31`)
+        .get();
+
+      const mapa = {};
+      chamadasSnap.forEach(doc => {
+        const ch = doc.data();
+        if (!mapa[ch.alunoId]) mapa[ch.alunoId] = { p: 0, f: 0 };
+        if (ch.status === "presente") mapa[ch.alunoId].p++;
+        else mapa[ch.alunoId].f++;
+      });
+
+      let criticos = 0;
+      for (const id in mapa) {
+        const total = mapa[id].p + mapa[id].f;
+        const perc = (mapa[id].f / total) * 100;
+        if (perc > 50) criticos++;
+      }
+
+      totalCriticasEl.textContent = criticos;
+    });
+  </script>
+
+  <!-- Bloqueio de botão direito em imagens -->
+  <script>
+    document.querySelectorAll("img").forEach(img => {
+      img.addEventListener("contextmenu", e => e.preventDefault());
+    });
+  </script>
+
+</body>
+</html>

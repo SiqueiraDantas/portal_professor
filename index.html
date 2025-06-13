@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portal do Professor - Made In Sertão</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@900&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .decor {
+      position: absolute;
+      z-index: 0;
+    }
+
+    .decor.zabumba { height: 80px; }
+    .decor.z1 { top: 60px; left: 5%; transform: rotate(-20deg); }
+    .decor.z2 { top: 60px; right: 5%; transform: rotate(15deg); }
+    .decor.nota { height: 50px; }
+    .decor.n1 { bottom: 25%; left: 12%; }
+    .decor.n2 { bottom: 25%; right: 12%; }
+
+    .login-card {
+      position: relative;
+      z-index: 1;
+      background-color: #ffffff;
+      border: 3px solid #f39017;
+      border-radius: 24px;
+      padding: 2rem;
+      max-width: 400px;
+      margin: 5% auto;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      text-align: center;
+    }
+
+    .portal-title {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 900;
+      font-size: 2rem;
+      color: #f39017;
+      margin-bottom: 1rem;
+    }
+
+    .logo-img {
+      display: block;
+      margin: 0 auto 1.5rem auto;
+      max-width: 180px;
+    }
+
+    .btn-laranja {
+      background-color: #f39017;
+      border-color: #f39017;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .btn-laranja:hover {
+      background-color: #d9780d;
+      border-color: #d9780d;
+    }
+
+    .form-control:focus {
+      border-color: #f39017;
+      box-shadow: 0 0 0 0.25rem rgba(243, 144, 23, 0.25);
+    }
+
+    #loginError {
+      display: none;
+    }
+
+    @media (max-width: 576px) {
+      .login-card {
+        margin: 10% 1rem;
+        padding: 1.5rem;
+      }
+
+      .decor.zabumba { height: 60px; }
+      .decor.nota { height: 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ilustrações decorativas -->
+  <img src="img/zabumba1.png" class="decor zabumba z1" alt="Zabumba Esquerda" draggable="false">
+  <img src="img/zabumba2.png" class="decor zabumba z2" alt="Zabumba Direita" draggable="false">
+  <img src="img/nota1.png" class="decor nota n1" alt="Nota Musical Esquerda" draggable="false">
+  <img src="img/nota2.png" class="decor nota n2" alt="Nota Musical Direita" draggable="false">
+
+  <div class="login-card">
+    <h1 class="portal-title">Portal do Professor</h1>
+    <img src="img/logo_colorida.png" alt="Logo Made In Sertão" class="logo-img" draggable="false">
+    
+    <form id="loginForm">
+      <div class="mb-3 text-start">
+        <label for="email" class="form-label">E-mail</label>
+        <input type="email" class="form-control" id="email" placeholder="seuemail@exemplo.com" required />
+      </div>
+      <div class="mb-3 text-start">
+        <label for="senha" class="form-label">Senha</label>
+        <input type="password" class="form-control" id="senha" placeholder="********" required />
+      </div>
+      <div id="loginError" class="alert alert-danger">E-mail ou senha incorretos.</div>
+      <button type="submit" class="btn btn-laranja w-100">Entrar</button>
+    </form>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/index.js"></script>
+
+  <!-- Bloqueio de clique com botão direito nas imagens -->
+  <script>
+    document.querySelectorAll("img").forEach(img => {
+      img.addEventListener("contextmenu", e => e.preventDefault());
+    });
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        const email = user.email;
+        if (email.includes("@professor")) {
+          window.location.href = "dashboard.html";
+        } else if (email.includes("@diretor")) {
+          window.location.href = "diretor.html";
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

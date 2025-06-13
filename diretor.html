@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal do Diretor</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .header {
+      background-color: #f39017;
+      padding: 1rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .logo-branca {
+      max-height: 60px;
+    }
+
+    .logo-colorida {
+      display: none;
+      max-height: 60px;
+    }
+
+    .dashboard-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      text-align: center;
+      margin-top: 1.8rem;
+      color: #f39017;
+    }
+
+    .card-box {
+      border-radius: 16px;
+      padding: 1rem;
+      color: #fff;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .card-box:hover {
+      transform: scale(1.02);
+    }
+
+    .card-brown { background-color: #8b4513; }
+    .card-blue { background-color: #3c78b4; }
+    .card-dark { background-color: #1b4b5f; }
+
+    .btn-dashboard {
+      background-color: #f39017;
+      color: #fff;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      margin: 0.5rem 0.4rem;
+      border: none;
+      transition: background-color 0.3s;
+    }
+
+    .btn-dashboard:hover {
+      background-color: #dd8000;
+    }
+
+    .card-custom {
+      background-color: #ffffff;
+      border: 3px solid #1b4b5f;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .card-custom h5 {
+      text-align: center;
+      font-weight: 600;
+      color: #1b4b5f;
+      margin-bottom: 1rem;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+      word-break: break-word;
+      white-space: normal;
+    }
+
+    td:nth-child(n+2):not(:last-child),
+    th:nth-child(n+2):not(:last-child) {
+      max-width: 120px;
+    }
+
+    th {
+      background-color: #f39017;
+      color: white;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+
+      #areaImpressao, #areaImpressao * {
+        visibility: visible;
+      }
+
+      #areaImpressao {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 20px;
+      }
+
+      .logo-branca {
+        display: none !important;
+      }
+
+      .logo-colorida {
+        display: inline !important;
+      }
+
+      #areaImpressao table {
+        width: 100% !important;
+        border-collapse: collapse;
+        font-size: 11pt;
+      }
+
+      #areaImpressao th,
+      #areaImpressao td {
+        border: 1px solid #ccc !important;
+        padding: 6px !important;
+        text-align: left;
+      }
+
+      button {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <button id="btnSair" class="btn btn-light position-absolute top-0 end-0 m-2">Sair</button>
+    <img src="img/logo_branca.png" alt="Logo Made In Sertão" class="logo-branca" draggable="false" />
+    <img src="img/logo_colorida.png" alt="Logo Made In Sertão" class="logo-colorida" draggable="false" />
+  </div>
+
+  <div class="container py-4">
+    <h2 class="dashboard-title">Portal do Diretor</h2>
+
+    <div class="row g-4 my-3 text-center justify-content-center">
+      <div class="col-md-3">
+        <div class="card-box card-brown" onclick="window.location.href='alunos_diretor.html'">
+          Alunos Matriculados
+          <div id="alunosTotal">---</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card-box card-blue" onclick="mostrarTabela('turmas')">
+          Turmas Ativas
+          <div id="turmasTotal">---</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card-box card-dark" onclick="window.location.href='frequencia_diretor.html'">
+          Frequência do Mês
+          <div><small>Clique para visualizar</small></div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card-box card-brown" onclick="mostrarTabela('faltas')">
+          Faltas Críticas
+          <div>---</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-center mb-4">
+      <a href="matricula_diretor.html" class="btn btn-dashboard">Matrículas</a>
+      <a href="turmas.html" class="btn btn-dashboard">Turmas</a>
+      <a href="turmas_com_alunos_diretor.html" class="btn btn-dashboard">Ver Alunos por Turma</a>
+      <a href="chamada.html" class="btn btn-dashboard">Chamada</a>
+      <a href="plano_de_aula.html" class="btn btn-dashboard">Plano de Aula</a>
+      <a href="relatorio_coletivo_turma.html" class="btn btn-dashboard">Ver Relatórios Mensais</a>
+      <a href="kpi.html" class="btn btn-dashboard">KPIs</a>
+    </div>
+
+    <div id="painelDinamico" class="card-custom hidden">
+      <h5 id="tituloPainel">...</h5>
+      <div id="conteudoPainel"></div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/diretor.js"></script>
+
+  <!-- Verificação de Login + Logout -->
+  <script>
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        window.location.href = "index.html";
+      }
+    });
+
+    document.getElementById("btnSair").addEventListener("click", () => {
+      firebase.auth().signOut().then(() => {
+        window.location.href = "index.html";
+      });
+    });
+  </script>
+
+  <!-- Bloqueio de botão direito em imagens -->
+  <script>
+    document.querySelectorAll("img").forEach(img => {
+      img.addEventListener("contextmenu", e => e.preventDefault());
+    });
+  </script>
+
+</body>
+</html>

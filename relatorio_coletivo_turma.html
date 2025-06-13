@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relatórios Mensais por Turma</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #ffffff;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    h2 {
+      color: #F26729;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    label {
+      color: #1B4B5F;
+      font-weight: 500;
+    }
+
+    .btn-madein {
+      background-color: #1B4B5F;
+      color: white;
+      border: none;
+    }
+
+    .btn-madein:hover {
+      background-color: #143744;
+    }
+
+    .table thead {
+      background-color: #1B4B5F;
+      color: white;
+    }
+
+    .table-bordered th, 
+    .table-bordered td {
+      border: 1px solid #1B4B5F;
+    }
+
+    td[contenteditable="true"] {
+      background-color: #fff8dc;
+    }
+
+    .btn-acao {
+      display: block;
+      margin-bottom: 6px;
+      width: 100%;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-voltar {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-weight: 500;
+      background-color: white;
+      color: #1B4B5F;
+    }
+
+    .btn-voltar:hover {
+      background-color: #f8f8f8;
+      color: #F26729;
+      border-color: #F26729;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container my-5">
+
+    <div class="top-bar">
+      <h2>Relatórios Mensais por Turma</h2>
+      <a href="diretor.html" class="btn btn-voltar">Voltar</a>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle">
+        <thead>
+          <tr>
+            <th>Turma</th>
+            <th>Data</th>
+            <th>Atividades</th>
+            <th>Observações</th>
+            <th style="min-width: 160px;">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaRelatorios"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Firebase + Script -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/relatorio_coletivo_turma.js"></script>
+
+</body>
+</html>
